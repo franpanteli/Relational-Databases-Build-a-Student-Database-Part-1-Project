@@ -1,0 +1,178 @@
+Making an SQL database:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+-> echo hello SQL <- To print `hello SQL` into the terminal 
+-> psql --username=freecodecamp --dbname=postgres <- To log into psql 
+-> \l <- To print the tables in the database 
+-> CREATE DATABASE students; <- To create a database called students 
+-> \c students <- To connect to the database 
+-> CREATE TABLE students(); <- To create a table 
+-> In this example we've created one called students and another called majors 
+	-> And another called courses 
+	-> Another called majors_courses
+-> \d <- To show (display) information about the tables which we have
+	-> \d students <- Example for a specific table 
+	-> \d majors_courses
+-> ALTER TABLE students ADD COLUMN student_id SERIAL PRIMARY KEY; <- To add a column 
+	-> More examples:
+		-> ALTER TABLE students ADD COLUMN first_name VARCHAR(50) NOT NULL; 
+		-> ALTER TABLE students ADD COLUMN last_name VARCHAR(50) NOT NULL; 
+		-> ALTER TABLE students ADD COLUMN major_id INT;
+		-> ALTER TABLE students ADD COLUMN gpa NUMERIC(2,1);
+		-> ALTER TABLE majors ADD COLUMN major_id SERIAL PRIMARY KEY;
+		-> ALTER TABLE majors ADD COLUMN major VARCHAR(50) NOT NULL;
+		-> ALTER TABLE courses ADD COLUMN course VARCHAR(100) NOT NULL;
+		-> ALTER TABLE majors_courses ADD COLUMN major_id INT;
+		-> ALTER TABLE majors_courses ADD COLUMN course_id INT;
+-> Adding foreign keys to the tables 
+	-> ALTER TABLE students ADD FOREIGN KEY(major_id) REFERENCES majors(major_id);
+	-> ALTER TABLE majors_courses ADD FOREIGN KEY(major_id) REFERENCES majors(major_id);
+	-> ALTER TABLE majors_courses ADD FOREIGN KEY(course_id) REFERENCES courses(course_id);
+
+-> Adding primary keys to the tables: 
+	-> ALTER TABLE courses ADD COLUMN course_id SERIAL PRIMARY KEY
+	-> ALTER TABLE majors_courses ADD PRIMARY KEY(major_id, course_id);
+
+-> Adding values into the tables:
+	-> INSERT INTO majors(major) VALUES('Database Administration')
+	-> INSERT INTO courses(course) VALUES('Data Structures and Algorithms');
+	-> INSERT INTO majors_courses(major_id, course_id) VALUES(1, 1);
+	-> INSERT INTO students(first_name, last_name, major_id, gpa) VALUES('Rhea', 'Kellems', 1, 2.5);
+
+-> Selecting and returning the values in tables:
+	-> SELECT * FROM majors;
+	-> SELECT * FROM courses;
+	-> SELECT * FROM majors_courses;
+	-> SELECT * FROM students;
+
+Making a shell file:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+-> \q <- To get out of psql
+-> touch insert_data.sh <- To make the shell file 
+-> chmod +x insert_data.sh <- To give the user execute permissions for that file 
+-> #!/bin/bash <- Adding a shebang at the top of that file to tell the terminal to use a Bash interpreter when running it 
+-> Then adding a comment (in Bash this follows the same syntax as Python for single line comments)
+-> Then adding in cat courses.csv <- To import and print the sql file which contains the database we just made 
+-> ./insert_data.sh <- To run that .sh file in the terminal 
+-> declare -p IFS <- To view the Internal Field Separator (IFS) in the terminal 
+	-> There is a default value for this in Bash 
+	-> declare -- IFS=" 
+"
+	-> To determine word boundaries -> spaces, tabs and new lines 
+-> You can add comments, which follow the same # Python syntax 
+-> PSQL="psql -X --username=freecodecamp --dbname=students --no-align --tuples-only -c"
+	-> This is entered into the .sh file, so that the database can be queried by running the .sh file 
+	-> $($PSQL "<query_here>") <- This enables us to query the database 
+	-> Then when you run the .sh file, it goes through each major from the .csv file and tries to find the major_id from the database 
+-> We have copied a csv file and are editing it in the terminal 
+	-> This contains a list of the courses which the computer science students major in 
+	-> We have copied our own version of it in the terminal using cp courses.csv courses_test.csv
+-> After each of the changes being made to the project .sh file, we are running it again 
+-> We have the sql database we've made with psql, and then we have the UI in the Bash terminal which we are writing the project .sh file with 
+	-> One is to manage and create the databases and the other is to run programs on them and read the data out of them  
+-> TRUNCATE majors; <- To delete all data in the `majors` table 
+	-> TRUNCATE majors, students, majors_courses; <- This can also be run on multiple tables 
+	-> SELECT * FROM majors_courses; <- Then to view the effect this has had (the empty database)
+	-> SELECT * FROM students; <- This is a similar line to the one before, just on a different table 
+	-> We are writing the .sh file which manages the program operating on the .sql file
+	-> Then we are running that using a Bash terminal 
+	-> But to edit the sql files which it's operating on we're logging into psql in the same terminal 
+	-> So there is a mode in the terminal which edits the sql file, and another which runs the .sh file operating on it 
+	-> You can only edit the sql file if you are logged into psql in the terminal  
+	-> \q <- To get out of this 
+-> We are checking if the query is empty so we can insert the course if needed 
+	-> In the project .sh file <- there are many different cases as to what the project sql could look like 
+	-> We are setting up a series of loops to determine the appropriate responses in each 
+-> Each time we are running the database project .sh file, we are changing the its csv file 
+	-> After editing the project .sh file, something which is repeated throughout this guided project is emptying (truncating) some or all of the tables in the database 
+		-> Then we are using \q to get back out of psql in the terminal 
+		-> Then ./insert_data.sh to run the script again 
+		-> Then we are adding this line (echo $($PSQL "TRUNCATE students, majors, courses, majors_courses")) into the project .sh file, so we don't have to do this every time in the terminal 
+		-> Using the project .sh file to automate tasks -> and to code those tasks 
+-> We are editing the project.sh file to change the database
+	-> Adding rows 
+	-> The .sh file operates on sql tables
+	-> So we are adding sql into the .sh file 
+	-> Depending on what the format of the argument which is passed into the program
+-> psql --username=freecodecamp --dbname=students <- This is what is used in the terminal to log into psql, from the Bash terminal which we use to run the .sh file 
+-> We are inserting the columns from the CSV file into the database, using the Bash in the project .sh file 
+-> We are editing the project .sh file, and running it in the terminal to see if it worked 
+	-> Another common theme is adding `echo` statements into the project .sh file, running the entire thing and then seeing if the outputs are correct as the code is executed to test it 
+	-> Then deleting these echo statements from the .sh file when it executes correctly with the changes 
+-> We continue to add sql to the project .sh file <- when we run this file, it operates on the databases which are passed into it as arguments 
+-> psql --username=freecodecamp --dbname=students <- To log back into psql in the terminal 
+-> \q <- To exit out of pqsl in the terminal 
+-> rm students_test.csv <- To delete a file in the terminal 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-> THE LAW OF MAXIMISING MINIMAL POTENTIAL. 
+-> THE TRUTH IS A NORTH STAR THROUGH THE CHAOS.
+-> WHO CARES WHAT YOU WERE? WERE YOU A GOOD PERSON?
+-> DO NOT BE AN EXHIBITIONIST. THERE IS NO NEED.
+-> IF SOMEBODY WANTS INFORMATION FROM YOU, IT MIGHT NOT BE BECAUSE THEY ARE INTERESTED IN YOU.
+-> THINK ABOUT THE CONSEQUENCES OF YOUR ACTIONS. THINK ABOUT THE HELL YOU WANT TO MOVE AWAY FROM AND THE LESS HELISH REALITY YOU WANT.
+-> DO NOT ACCEPT STATUS WHERE STATUS IS NOT EARNED. 
+-> SUCCESS IS A TRY FAIL ON REPEAT.
+-> IT DOES NOT MATTER WHERE YOU ARE, IT MATTERS WHERE YOU ARE GOING.
+-> YOUR POWER IS THE ABILITY TO GET INTO THE GROWTH ZONE.
+-> WHEN PEOPLE ENVY YOU BECAUSE OF YOU SUCCESS, THEY WILL CRITICISE SOMETHING COMPLETELY UNRELATED. 
+-> RELENTLESSLY SEEK AND SPEAK THE TRUTH. IF YOU HAD BEEN LIED TO FOR 21 YEARS MY OMISSION ABOUT YOUR ATTRACTION TO MEN.
+-> THE DOMINANCE HIERARCHY EXISTS.
+-> SUCCESS IS A SPONTANEOUS EFFECT OF THE GROWTH ZONE.
+-> YOU CANNOT CHANGE PEOPLE WHO DO NOT WANT TO CHANGE.
+-> REWARD EFFORT, NOT OUTCOME.
+-> DO NOT TRY AND PLEASE DESTRUCTIVE CRITICISERS OR CHANGE YOURSELF TO STOP THEM DESTRUCTIVELY CRITICISING YOU.
+-> THE PEOPLE YOU DEIFY OR ADMIRE ARE NOT GODS. 
+-> DO NOT ENABLE AND PEOPLE PLEASE OTHERS, BECAUSE YOU WANT THEM TO LIKE YOU. 
+-> LIFE IS GOING TO HAPPEN, AND YOU ARE GOING TO SUFFER.
+-> PEOPLE WHO HAVE A SCAPEGOAT SHOULD LOOK INSIDE AND AROUND THEM. THEY ARE IN A LIVING HELL THEY CAN'T ESCAPE FROM AND THEY ARE DAMNED.
+-> INVEST IN PEOPLE BASED ON HOW THEY TREAT YOU.
+-> DO NOT ASSUME WHAT PEOPLE WANT, AND IF IT IS STATED, FOLLOW IT TO THE LETTER.
+-> STOP LOOKING TOWARDS OTHER PEOPLE, AND LEARN FROM YOUR FAILURES. 
+-> CONSTRUCTIVE CRITICISM IS TO SOLVE PROBLEMS. DESTRUCTIVE CRITICISM IS USUALLY A SIGN THAT YOU ARE BETTER THAN SOMEONE ELSE IN SOME WAY. YOU CANNOT CHANGE OR SAVE THEM, AND THEY ARE TRYING TO DRAG YOU BACK INTO THEIR LIVING HELL. 
+-> THOSE WHO HAVE SWORDS AND KEEP THEM SHEATHED SHALL INHERIT THE WORLD. YOUR COMPETENCE AND ABILITY TO GET INTO THE GROWTH ZONE IS YOUR SWORD.
+-> DO NOT ASSUME GUILT WHERE EVIDENCE IS NOT SHOWN. RECOGNISE AN IDEOLOGUE WHEN YOU SEE ONE.
+
+-> The government valuing HS2 rather than welfare 
+-> The balance between the amount of people and the resources -> few benefitting from the most 
+-> They leave people at the bottom with the bare bones of help 
+-> Gov't investing in H2S <- high status (not welfare)
+-> Loving somebody is leaving them alone and helping them when needed 
+	-> They wouldn't leave me alone
+	-> They were either trying to destroy me because they were envious -> by blaming me for something I didn't do, criticising me for my fashion, hunting for intimation on me 
+	-> Or they were trying to use me -> for my education and career regrets 
+-> Destructive criticism, acting like someone is doing something wrong because you are envious of something they have
+-> Making judgements about entire scapegoated groups of people 
